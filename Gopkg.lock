@@ -14,6 +14,12 @@
   revision = "d14ea06fba99483203c19d92cfcd13ebe73135f4"
 
 [[projects]]
+  name = "github.com/jessevdk/go-flags"
+  packages = ["."]
+  revision = "c6ca198ec95c841fdb89fc0de7496fed11ab854e"
+  version = "v1.4.0"
+
+[[projects]]
   name = "github.com/kevinburke/ssh_config"
   packages = ["."]
   revision = "6cfae18c12b8934b1afba3ce8159476fdef666ba"
@@ -82,6 +88,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "a3758b55b65d642da46e357017e3eca40f593b3020d121a9e418edc4f04493d8"
+  inputs-digest = "a135f9fbd31aff4990c13dee96e8ca1527c0e6db84ee4fa2894f302ace04859c"
   solver-name = "gps-cdcl"
   solver-version = 1

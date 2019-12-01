@@ -7,11 +7,35 @@ import (
 	"strings"
 	"path/filepath"
 	"gopkg.in/src-d/go-git.v4"
+	"gopkg.in/src-d/go-git.v4/plumbing"
 	"gopkg.in/src-d/go-git.v4/plumbing/object"
 	"gopkg.in/src-d/go-git.v4/storage/memory"
+	"github.com/jessevdk/go-flags"
 )
 
-func GetMatchingFiles(files *object.FileIter, name string) ([]*object.File, error) {
+//The Arguments struct is where we save the program arguments
+type Arguments struct {
+	ReqArgs struct {
+		URL   string `description:"URL to a Git repository"`
+		Path  string `description:"File or directory to download"`
+	} `positional-args:"yes" required:"yes"`
+	Branch string `short:"b" long:"branch" description:"Branch, tag or commit hash"`
+}
+
+func parseArgs() (Arguments, error) {
+	var opts Arguments
+	parser := flags.NewParser(&opts, flags.Default)
+	_, err := parser.Parse()
+	if err != nil {
+		if e, ok := err.(*flags.Error); ok && e.Type == flags.ErrRequired {
+			parser.WriteHelp(os.Stdout)
+		}
+		os.Exit(1)
+	}
+	return opts, err
+}
+
+func getMatchingFiles(files *object.FileIter, name string) ([]*object.File, error) {
 	var result []*object.File;
 	for file, err := files.Next(); err != io.EOF; file, err = files.Next() {
 		if err != nil {
@@ -25,21 +49,33 @@ func GetMatchingFiles(files *object.FileIter, name string) ([]*object.File, erro
 	return result, nil
 }
 
-func main() {
-	if len(os.Args) < 3 {
-		fmt.Printf("Usage: %s <remote> <file/path>", os.Args[0])
+func checkError(err error) {
+	if err != nil {
+		fmt.Printf("Error: %v\n", err)
 		os.Exit(1)
-	}
-	url := os.Args[1]
-	filePath := os.Args[2]
+	} 
+}
 
-	r, _ := git.Clone(memory.NewStorage(), nil, &git.CloneOptions{
+func main() {
+	args, err := parseArgs()
+	checkError(err)
+	url := args.ReqArgs.URL
+	filePath := args.ReqArgs.Path
+	r, err := git.Clone(memory.NewStorage(), nil, &git.CloneOptions{
 		URL: url,
 	})
-	ref, _ := r.Head()
-	commit, _ := r.CommitObject(ref.Hash())
-	tree, _ := commit.Tree()
-	files, _ := GetMatchingFiles(tree.Files(), filePath)
+	checkError(err)
+	revision := plumbing.Revision(string(plumbing.HEAD))
+	if args.Branch != "" {
+		revision = plumbing.Revision(args.Branch)
+	}
+	hash, err := r.ResolveRevision(revision)
+	commit, err := r.CommitObject(*hash)
+	checkError(err)
+	tree, err := commit.Tree()
+	checkError(err)
+	files, err := getMatchingFiles(tree.Files(), filePath)
+	checkError(err)
 	if len(files) > 1 {
 		pathTokens := strings.Split(filePath, "/")
 		baseDir := pathTokens[len(pathTokens)-1]
@@ -51,16 +87,18 @@ func main() {
 				os.MkdirAll(pathToCreate, os.ModePerm)
 			}
 			osfile, err := os.Create(relFilePath)
-			if (err != nil) {
-				fmt.Println(err)
-			}
-			fileContents, _ := file.Contents()
-			osfile.WriteString(fileContents)
+			checkError(err)
+			fileContents, err := file.Contents()
+			checkError(err)
+			_, err = osfile.WriteString(fileContents)
+			checkError(err)
 		}
 	} else {
 		file, _ := os.Create(filePath)
 		fmt.Println(filePath)
-		fileContents, _ := files[0].Contents()
-		file.WriteString(fileContents)
+		fileContents, err := files[0].Contents()
+		checkError(err)
+		_, err = file.WriteString(fileContents)
+		checkError(err)
 	}
 }

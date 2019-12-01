@@ -17,11 +17,19 @@ go get github.com/GuillemCastro/git-get
 ## Usage
 
 ```
-git get <remote> <file or directory>
+Usage:
+  git get [OPTIONS] URL Path
+
+Application Options:
+  -b, --branch= Branch, tag or commit hash
+  -o, --output= Name of the output file or directory
+
+Help Options:
+  -h, --help    Show this help message
 
 Arguments:
-    remote  a Git repository
-    file    the file or directory to be downloaded
+  URL:          URL to a Git repository
+  Path:         File or directory to download
 ```
 
 For example to download the `main.go` file from this repository, we would execute:
@@ -30,16 +38,17 @@ For example to download the `main.go` file from this repository, we would execut
 
 This will download the file onto the current folder. Note that it will override any local file.
 
-To download a folder, the procedure is the same. If we want to downlaod the `src` folder from this repository https://github.com/GuillemCastro/rt-data, we would execute:
+To download a folder, the procedure is the same. If we want to download the `src` folder from this repository https://github.com/GuillemCastro/rt-data, we would execute:
 
 `git get github.com/GuillemCastro/rt-data src`
 
-This will create a folder `src` in the current folder.
+This will create a `src` folder inside the current folder.
 
 ## Status
 
 - [x] Download a file or folder from the master/default branch
-- [ ] Download from a branch, tag or a specific commit
+- [x] Download from a branch, tag or a specific commit
+- [ ] Use git config
 - [ ] Don't require a complete clone
 
 ## License

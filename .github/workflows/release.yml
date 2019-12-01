@@ -39,7 +39,7 @@ jobs:
     - name: Build
       run: |
         go build -v github.com/GuillemCastro/git-get
-        zip --junk-paths git-get-${{matrix.os}}.zip $HOME/go/src/GuillemCastro/git-get $HOME/go/src/GuillemCastro/LICENSE
+        zip --junk-paths git-get-${{matrix.os}}.zip $HOME/go/src/GuillemCastro/git-get/git-get $HOME/go/src/GuillemCastro/git-get/LICENSE
   
     - name: Create Release
       id: create_release

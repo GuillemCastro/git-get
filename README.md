@@ -4,7 +4,7 @@ Download a single file or directory from a git repository. Inspired by `svn expo
 
 Currently, we depend on the fact that most version control hosts provide a way to access and download the raw files of a repository. On Github we can download a file by executing `wget https://raw.githubusercontent.com/user/project/branch/file`, on Bitbucket it's `wget https://bitbucket.org/user/project/raw/commit-hash/file` and on Gitlab `wget https://gitlab.com/user/project/raw/branch/file`. As you can see, there's no standard way to download a file, let alone a whole folder.
 
-Right now this is done by making an in-memory clone and copying the requested files. This is not viable for very large repos. The objective is to be able to download files without having to do a full clone.
+Right now git-get makes an in-memory clone and copies the requested files. This is not viable for very large repos. The objective is to be able to download files without having to do a full clone.
 
 ## Installing
 
@@ -38,9 +38,9 @@ This will create a folder `src` in the current folder.
 
 ## Status
 
-[x] Download a file or folder from the master/default branch
-[ ] Download from a branch, tag or a specific commit
-[ ] Don't require a complete clone
+- [x] Download a file or folder from the master/default branch
+- [ ] Download from a branch, tag or a specific commit
+- [ ] Don't require a complete clone
 
 ## License
 

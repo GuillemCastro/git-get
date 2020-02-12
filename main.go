@@ -35,6 +35,17 @@ func parseArgs() (Arguments, error) {
 	return opts, err
 }
 
+func pathStartsWith(path string, prefix string) bool {
+	var splitPath = strings.Split(path, "/")
+	var splitPrefix = strings.Split(prefix, "/")
+	for idx, f := range splitPrefix {
+		if f != splitPath[idx] {
+			return false
+		}
+	}
+	return true
+}
+
 func getMatchingFiles(files *object.FileIter, name string) ([]*object.File, error) {
 	var result []*object.File;
 	for file, err := files.Next(); err != io.EOF; file, err = files.Next() {
@@ -42,7 +53,7 @@ func getMatchingFiles(files *object.FileIter, name string) ([]*object.File, erro
 			return nil, err
 		}
 		fileName := file.Name
-		if strings.HasPrefix(fileName, name) {
+		if pathStartsWith(fileName, name) {
 			result = append(result, file)
 		}
 	}
@@ -93,7 +104,7 @@ func main() {
 			_, err = osfile.WriteString(fileContents)
 			checkError(err)
 		}
-	} else {
+	} else if len(files) == 1 {
 		file, _ := os.Create(filePath)
 		fmt.Println(filePath)
 		fileContents, err := files[0].Contents()
